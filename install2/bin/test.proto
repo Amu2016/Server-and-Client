@@ -1,0 +1,15 @@
+syntax = "proto2";
+package Test;
+
+message ReqPersonInfo
+{
+	required int32 msgId = 1;
+}
+
+message ResPersonInfo
+{
+	required int32 msgId = 1;
+	required bytes name = 2;
+	required int32 id = 3;
+	optional bytes email = 4;
+}

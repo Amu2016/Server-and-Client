@@ -1,24 +1,24 @@
-#include"ThreadPool.h"
+ï»¿#include"ThreadPool.h"
 
 //#include "thread.h"
 #include <iostream>   
-#include "stdlib.h"   
+//#include "stdlib.h"   
 
 void CTask::SetData(void * data)
 {
 	m_ptrData = data;
 }
 
-vector<CTask*> CThreadPool::m_vecTaskList;         //ÈÎÎñÁĞ±í   
+vector<CTask*> CThreadPool::m_vecTaskList;         //ä»»åŠ¡åˆ—è¡¨   
 bool CThreadPool::shutdown = false;
 
 pthread_mutex_t CThreadPool::m_pthreadMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t CThreadPool::m_pthreadCond = PTHREAD_COND_INITIALIZER;
 
 /**
-* Ïß³Ì³Ø¹ÜÀíÀà¹¹Ôìº¯Êı
+* çº¿ç¨‹æ± ç®¡ç†ç±»æ„é€ å‡½æ•°
 */
-CThreadPool::CThreadPool(int threadNum)
+void CThreadPool::setPoolSize(int threadNum)
 {
 	this->m_iThreadNum = threadNum;
 	cout << "I will create " << threadNum << " threads" << endl;
@@ -26,7 +26,7 @@ CThreadPool::CThreadPool(int threadNum)
 }
 
 /**
-* Ïß³Ì»Øµ÷º¯Êı
+* çº¿ç¨‹å›è°ƒå‡½æ•°
 */
 void* CThreadPool::ThreadFunc(void* threadData)
 {
@@ -50,7 +50,7 @@ void* CThreadPool::ThreadFunc(void* threadData)
 		vector<CTask*>::iterator iter = m_vecTaskList.begin();
 
 		/**
-		* È¡³öÒ»¸öÈÎÎñ²¢´¦ÀíÖ®
+		* å–å‡ºä¸€ä¸ªä»»åŠ¡å¹¶å¤„ç†ä¹‹
 		*/
 		CTask* task = *iter;
 		if (iter != m_vecTaskList.end())
@@ -61,14 +61,14 @@ void* CThreadPool::ThreadFunc(void* threadData)
 
 		pthread_mutex_unlock(&m_pthreadMutex);
 
-		task->Run(); /** Ö´ĞĞÈÎÎñ */
+		task->Run(); /** æ‰§è¡Œä»»åŠ¡ */
 		printf("tid:%lu idle\n", tid);
 	}
 	return (void*)0;
 }
 
 /**
-* ÍùÈÎÎñ¶ÓÁĞÀï±ßÌí¼ÓÈÎÎñ²¢·¢³öÏß³ÌÍ¬²½ĞÅºÅ
+* å¾€ä»»åŠ¡é˜Ÿåˆ—é‡Œè¾¹æ·»åŠ ä»»åŠ¡å¹¶å‘å‡ºçº¿ç¨‹åŒæ­¥ä¿¡å·
 */
 int CThreadPool::AddTask(CTask *task)
 {
@@ -80,7 +80,7 @@ int CThreadPool::AddTask(CTask *task)
 }
 
 /**
-* ´´½¨Ïß³Ì
+* åˆ›å»ºçº¿ç¨‹
 */
 int CThreadPool::Create()
 {
@@ -93,21 +93,21 @@ int CThreadPool::Create()
 }
 
 /**
-* Í£Ö¹ËùÓĞÏß³Ì
+* åœæ­¢æ‰€æœ‰çº¿ç¨‹
 */
 int CThreadPool::StopAll()
 {
-	/** ±ÜÃâÖØ¸´µ÷ÓÃ */
+	/** é¿å…é‡å¤è°ƒç”¨ */
 	if (shutdown)
 	{
 		return -1;
 	}
 	printf("Now I will end all threads!!\n");
-	/** »½ĞÑËùÓĞµÈ´ıÏß³Ì£¬Ïß³Ì³ØÒªÏú»ÙÁË */
+	/** å”¤é†’æ‰€æœ‰ç­‰å¾…çº¿ç¨‹ï¼Œçº¿ç¨‹æ± è¦é”€æ¯äº† */
 	shutdown = true;
 	pthread_cond_broadcast(&m_pthreadCond);
 
-	/** ×èÈûµÈ´ıÏß³ÌÍË³ö£¬·ñÔò¾Í³É½©Ê¬ÁË */
+	/** é˜»å¡ç­‰å¾…çº¿ç¨‹é€€å‡ºï¼Œå¦åˆ™å°±æˆåƒµå°¸äº† */
 	for (int i = 0; i < m_iThreadNum; i++)
 	{
 		pthread_join(pthread_id[i], NULL);
@@ -116,7 +116,7 @@ int CThreadPool::StopAll()
 	free(pthread_id);
 	pthread_id = NULL;
 
-	/** Ïú»ÙÌõ¼ş±äÁ¿ºÍ»¥³âÌå */
+	/** é”€æ¯æ¡ä»¶å˜é‡å’Œäº’æ–¥ä½“ */
 	pthread_mutex_destroy(&m_pthreadMutex);
 	pthread_cond_destroy(&m_pthreadCond);
 
@@ -124,7 +124,7 @@ int CThreadPool::StopAll()
 }
 
 /**
-* »ñÈ¡µ±Ç°¶ÓÁĞÖĞÈÎÎñÊı
+* è·å–å½“å‰é˜Ÿåˆ—ä¸­ä»»åŠ¡æ•°
 */
 int CThreadPool::getTaskSize()
 {

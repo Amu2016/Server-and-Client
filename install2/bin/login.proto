@@ -1,0 +1,17 @@
+syntax = "proto2";
+package Login;
+
+message Login
+{
+	required int32 msgId = 1;
+	required bytes name = 2;
+	required int32 password = 3;
+}
+
+message LoginSuccess
+{
+	required int32 msgId = 1;
+	required bytes name = 2;
+	required int32 id = 3;
+	optional bytes email = 4;
+}

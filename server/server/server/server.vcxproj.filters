@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="bean">
+      <UniqueIdentifier>{51a1f8ba-27d7-4d32-911d-3e35c24083f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{7e955dd0-d403-469a-8985-87eaa7d58d79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="bean\bese">
+      <UniqueIdentifier>{d89fd124-54b2-4320-9538-6511fabc2c3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{8334e9b2-a414-495e-bac2-f21e710fd44f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{b20c2cb9-01df-4cb9-8456-e6ea85f3caff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sql">
+      <UniqueIdentifier>{76befb80-ac3c-49f6-a0b2-4dda843b6f73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="server.cpp">
@@ -30,6 +48,24 @@
     <ClCompile Include="TaskBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\bean\test.pb.cc">
+      <Filter>bean</Filter>
+    </ClCompile>
+    <ClCompile Include="..\net\MessagePool.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\net\MsgMgr.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\util\CircularBufer.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\net\msgteam.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="..\bean\login.pb.cc">
+      <Filter>bean</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyServer.h">
@@ -43,6 +79,42 @@
     </ClInclude>
     <ClInclude Include="TaskBase.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bean\test.pb.h">
+      <Filter>bean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\net\MessagePool.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\net\MsgMgr.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bean\test_message.h">
+      <Filter>bean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bean\base\base_message.h">
+      <Filter>bean\bese</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stdafx.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\util\CircularBufer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\net\msgteam.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bean\login.pb.h">
+      <Filter>bean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bean\login_message.h">
+      <Filter>bean</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sql\SqlMgr.h">
+      <Filter>sql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sql\Q_login_data.h">
+      <Filter>sql</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

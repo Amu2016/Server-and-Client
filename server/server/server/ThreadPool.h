@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<pthread.h>
 #include<vector>
 #include<string>
@@ -8,30 +8,37 @@ using namespace std;
 
 
 /**
-* Ïß³Ì³Ø¹ÜÀíÀàµÄÊµÏÖ
+* çº¿ç¨‹æ± ç®¡ç†ç±»çš„å®ç°
 */
 class CThreadPool
 {
 private:
-	static  vector<CTask*> m_vecTaskList;     /** ÈÎÎñÁĞ±í */
-	static  bool shutdown;                    /** Ïß³ÌÍË³ö±êÖ¾ */
-	int     m_iThreadNum;                     /** Ïß³Ì³ØÖĞÆô¶¯µÄÏß³ÌÊı */
+	CThreadPool() {}
+
+	static  vector<CTask*> m_vecTaskList;     /** ä»»åŠ¡åˆ—è¡¨ */
+	static  bool shutdown;                    /** çº¿ç¨‹é€€å‡ºæ ‡å¿— */
+	int     m_iThreadNum;                     /** çº¿ç¨‹æ± ä¸­å¯åŠ¨çš„çº¿ç¨‹æ•° */
 	pthread_t   *pthread_id;
 
-	static pthread_mutex_t m_pthreadMutex;    /** Ïß³ÌÍ¬²½Ëø */
-	static pthread_cond_t m_pthreadCond;      /** Ïß³ÌÍ¬²½µÄÌõ¼ş±äÁ¿ */
+	static pthread_mutex_t m_pthreadMutex;    /** çº¿ç¨‹åŒæ­¥é” */
+	static pthread_cond_t m_pthreadCond;      /** çº¿ç¨‹åŒæ­¥çš„æ¡ä»¶å˜é‡ */
 
 protected:
-	static void* ThreadFunc(void * threadData); /** ĞÂÏß³ÌµÄÏß³Ì»Øµ÷º¯Êı */
-	static int MoveToIdle(pthread_t tid);       /** Ïß³ÌÖ´ĞĞ½áÊøºó£¬°Ñ×Ô¼º·ÅÈëµ½¿ÕÏĞÏß³ÌÖĞ */
-	static int MoveToBusy(pthread_t tid);       /** ÒÆÈëµ½Ã¦ÂµÏß³ÌÖĞÈ¥ */
+	static void* ThreadFunc(void * threadData); /** æ–°çº¿ç¨‹çš„çº¿ç¨‹å›è°ƒå‡½æ•° */
+	static int MoveToIdle(pthread_t tid);       /** çº¿ç¨‹æ‰§è¡Œç»“æŸåï¼ŒæŠŠè‡ªå·±æ”¾å…¥åˆ°ç©ºé—²çº¿ç¨‹ä¸­ */
+	static int MoveToBusy(pthread_t tid);       /** ç§»å…¥åˆ°å¿™ç¢Œçº¿ç¨‹ä¸­å» */
 
-	int Create();          /** ´´½¨Ïß³Ì³ØÖĞµÄÏß³Ì */
+	int Create();          /** åˆ›å»ºçº¿ç¨‹æ± ä¸­çš„çº¿ç¨‹ */
 
 public:
-	CThreadPool(int threadNum = 10);
+	static CThreadPool* getInstance() {
+		static CThreadPool* threadPool = new CThreadPool();
+		return threadPool;
+	}
 
-	int AddTask(CTask *task);      /** °ÑÈÎÎñÌí¼Óµ½ÈÎÎñ¶ÓÁĞÖĞ */
-	int StopAll();                 /** Ê¹Ïß³Ì³ØÖĞµÄÏß³ÌÍË³ö */
-	int getTaskSize();             /** »ñÈ¡µ±Ç°ÈÎÎñ¶ÓÁĞÖĞµÄÈÎÎñÊı */
+	void setPoolSize(int threadNum = 10);
+
+	int AddTask(CTask *task);      /** æŠŠä»»åŠ¡æ·»åŠ åˆ°ä»»åŠ¡é˜Ÿåˆ—ä¸­ */
+	int StopAll();                 /** ä½¿çº¿ç¨‹æ± ä¸­çš„çº¿ç¨‹é€€å‡º */
+	int getTaskSize();             /** è·å–å½“å‰ä»»åŠ¡é˜Ÿåˆ—ä¸­çš„ä»»åŠ¡æ•° */
 };

@@ -1,24 +1,22 @@
-﻿  Client.cpp
-d:\cocos\test\server\server\server\client.cpp(17): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\um\winsock2.h(1848): note: 参见“inet_ntoa”的声明
-d:\cocos\test\server\server\server\client.cpp(20): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+﻿  server.cpp
+d:\cocos\server-and-client\server\server\net\messagepool.h(16): warning C4474: printf: 格式字符串中传递的参数太多
+  d:\cocos\server-and-client\server\server\net\messagepool.h(16): note: 占位符和其参数预计 0 可变参数，但提供的却是 1 参数
+d:\cocos\server-and-client\server\server\server\myserver.h(3): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+d:\cocos\server-and-client\server\server\sql\sqlmgr.h(20): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(1774): note: 参见“sprintf”的声明
-  MyServer.cpp
-d:\cocos\test\server\server\server\myserver.h(3): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
-d:\cocos\test\server\server\server\myserver.cpp(68): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\um\winsock2.h(1848): note: 参见“inet_ntoa”的声明
-d:\cocos\test\server\server\server\myserver.cpp(85): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(133): note: 参见“strcpy”的声明
-d:\cocos\test\server\server\server\myserver.cpp(87): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(133): note: 参见“strcpy”的声明
-d:\cocos\test\server\server\server\myserver.cpp(89): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(133): note: 参见“strcpy”的声明
-d:\cocos\test\server\server\server\myserver.cpp(117): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\um\winsock2.h(1848): note: 参见“inet_ntoa”的声明
-d:\cocos\test\server\server\server\myserver.cpp(119): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+d:\cocos\server-and-client\server\server\sql\sqlmgr.h(40): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 1 拥有了类型“my_ulonglong”
+  d:\cocos\server-and-client\server\server\sql\sqlmgr.h(40): note: 请考虑在格式字符串中使用“%lld”
+  d:\cocos\server-and-client\server\server\sql\sqlmgr.h(40): note: 请考虑在格式字符串中使用“%I64d”
+d:\cocos\server-and-client\server\server\sql\sqlmgr.h(68): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(1774): note: 参见“sprintf”的声明
-d:\cocos\test\server\server\server\myserver.cpp(139): warning C4473: “printf”: 没有为格式字符串传递足够的参数
-  d:\cocos\test\server\server\server\myserver.cpp(139): note: 占位符和其参数预计 1 可变参数，但提供的却是 0 参数
-  d:\cocos\test\server\server\server\myserver.cpp(139): note: 缺失的可变参数 1 为格式字符串“%s”所需
-  正在生成代码...
-  server.vcxproj -> D:\Cocos\test\server\server\Debug\server.exe
+d:\cocos\server-and-client\server\server\sql\sqlmgr.h(81): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(1774): note: 参见“sprintf”的声明
+d:\cocos\server-and-client\server\server\sql\sqlmgr.h(98): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(1774): note: 参见“sprintf”的声明
+d:\cocos\server-and-client\server\server\sql\q_login_data.h(25): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\stdio.h(1774): note: 参见“sprintf”的声明
+d:\cocos\server-and-client\server\server\server\server.cpp(42): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(338): note: 参见“strncpy”的声明
+d:\cocos\server-and-client\server\server\server\server.cpp(47): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(338): note: 参见“strncpy”的声明
+  server.vcxproj -> D:\Cocos\Server-and-Client\server\server\Debug\server.exe

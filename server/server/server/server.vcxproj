@@ -29,7 +29,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -70,7 +70,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\Cocos\test\Pre-built.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>D:\Cocos\Server-and-Client\server\server;D:\Cocos\test\Pre-built.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>D:\Cocos\Server-and-Client\install\include;D:\Cocos\Server-and-Client\Pre-built.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,18 +81,25 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\MySQL\MySQL Server 5.7\include;..\src;D:\Cocos\Server-and-Client\server\server;D:\Cocos\Server-and-Client\install2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Cocos\test\Pre-built.2\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\MySQL\MySQL Server 5.7\lib;D:\Cocos\Server-and-Client\install2\lib;D:\Cocos\test\Pre-built.2\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobufd.lib;libprotobuf-lited.lib;libprotocd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Cocos\Server-and-Client\Pre-built.2\lib\x64;D:\Cocos\Server-and-Client\install\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>D:\Cocos\Server-and-Client\Pre-built.2\lib\x86</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -120,6 +130,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\bean\login.pb.cc" />
+    <ClCompile Include="..\bean\test.pb.cc" />
+    <ClCompile Include="..\net\MessagePool.cpp" />
+    <ClCompile Include="..\net\MsgMgr.cpp" />
+    <ClCompile Include="..\net\msgteam.cpp" />
+    <ClCompile Include="..\util\CircularBufer.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="MyServer.cpp" />
     <ClCompile Include="server.cpp" />
@@ -127,6 +143,18 @@
     <ClCompile Include="ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\bean\base\base_message.h" />
+    <ClInclude Include="..\bean\login.pb.h" />
+    <ClInclude Include="..\bean\login_message.h" />
+    <ClInclude Include="..\bean\test.pb.h" />
+    <ClInclude Include="..\bean\test_message.h" />
+    <ClInclude Include="..\net\MessagePool.h" />
+    <ClInclude Include="..\net\MsgMgr.h" />
+    <ClInclude Include="..\net\msgteam.h" />
+    <ClInclude Include="..\sql\Q_login_data.h" />
+    <ClInclude Include="..\sql\SqlMgr.h" />
+    <ClInclude Include="..\src\stdafx.h" />
+    <ClInclude Include="..\util\CircularBufer.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="MyServer.h" />
     <ClInclude Include="TaskBase.h" />

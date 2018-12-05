@@ -1,76 +1,57 @@
-#include<stdio.h>
+ï»¿#include<stdio.h>
 #include<WinSock2.h>
 #include<string>
 #include"ThreadPool.h"
+#include"net/MessagePool.h"
 #include"MyServer.h"
+#include"sql/Q_login_data.h"
 #pragma comment(lib,"ws2_32.lib")
 
 int main(int argc, char*argv[]) {
-	//WORD sockVersion = MAKEWORD(2, 2);
-	//WSADATA wsaData;
-	//if (WSAStartup(sockVersion, &wsaData) != 0) {
-	//	return 0;
-	//}
+	SqlMgr::getInstance();
 
-	////´´½¨Ì×½Ó×Ö 
-	//SOCKET slisten = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	//if (slisten == INVALID_SOCKET) {
-	//	printf("socket error!!!");
-	//	return 0;
-	//}
+	Q_login::getInstance()->Write("å®¢æˆ·ç«¯ä¸€å·", "201314", "461427494@qq.com");
 
-	////°ó¶¨IPºÍ¶Ë¿Ú 
-	//sockaddr_in sin;
-	//sin.sin_family = AF_INET;
-	//sin.sin_port = htons(8888);
-	//sin.sin_addr.S_un.S_addr = INADDR_ANY;
+	CThreadPool::getInstance()->setPoolSize(10);
+	Server::getInstance();
+	//server.WaitForClient();
 
-	//if (bind(slisten, (LPSOCKADDR)&sin, sizeof(sin)) == SOCKET_ERROR) {
-	//	printf("bind error!!!");
-	//	return 0;
-	//}
+	char* recv_msgName = new char[100];
+	char* recv_msgBuffer = new char[SOCKET_READ_BUFFER_SIZE];
+	char* msg;
+	int32_t msgLen;
+	int m_len, msgId, nameLenth;
 
-	////¿ªÊ¼¼àÌı 
-	//if (listen(slisten, 5) == SOCKET_ERROR) {
+	MsgTeam msgTeam;
+	msgTeam.InitTeam();
+	while (true)
+	{
+		MsgBuffer* msgBuffer =  msgTeam.GetMsg();
+		msg = msgBuffer->msg;
+		msgLen = msgBuffer->lenth;
+		//printf("Handle Msg...  \n");
+		//æ¶ˆæ¯é•¿åº¦
+		m_len = ((byte)msg[0] << 24) | ((byte)msg[1] << 16) | ((byte)msg[2] << 8) | ((byte)msg[3]);
+		//æ¶ˆæ¯id
+		msgId = ((byte)msg[4] << 24) | ((byte)msg[5] << 16) | ((byte)msg[6] << 8) | ((byte)msg[7]);
+		//æ¶ˆæ¯åå­—é•¿åº¦
+		nameLenth = ((byte)msg[8] << 24) | ((byte)msg[9] << 16) | ((byte)msg[10] << 8) | ((byte)msg[11]);
 
-	//	printf("listen error !");
-	//	return 0;
-	//}
+		//æ¶ˆæ¯åå­—
+		memset(recv_msgName, 0, nameLenth);
+		strncpy(recv_msgName, msg + 12, (12 + nameLenth));
+		recv_msgName[nameLenth] = 0x00;
 
-	////Ñ­»·½ÓÊÕÊı¾İ  
-	//SOCKET sClient;
-	//sockaddr_in remoteAddr;
-	//int nAddrlen = sizeof(remoteAddr);
-	//char revData[255];
-	//while (true)
-	//{
-	//	printf("µÈ´ıÁ´½Ó...\n"); 
-	//	sClient = accept(slisten, (SOCKADDR*)&remoteAddr, &nAddrlen);
-	//	if (sClient == INVALID_SOCKET) {
-	//		printf("accept error!!!");
-	//		continue;
-	//	}
-	//	printf("½ÓÊÜµ½Ò»¸öÁ´½Ó: %s \r\n", inet_ntoa(remoteAddr.sin_addr));
+		//æ¶ˆæ¯ä¸»ä½“
+		memset(recv_msgBuffer, 0, msgLen - 12 - nameLenth);
+		strncpy(recv_msgBuffer, msg + 12 + nameLenth, msgLen - 12 - nameLenth);
 
-	//	//½ÓÊÕÊı¾İ  
-	//	int ret = recv(sClient, revData, 255, 0);
-	//	if (ret > 0) {
-	//		revData[ret] = 0x00;
-	//		printf(revData);
-	//	}
-	//	//·¢ËÍÊı¾İ
-	//	char* sendData = new char[255];
-	//	sprintf(sendData, "ÄãºÃ, IP: %s ¿Í»§¶Ë!\n", inet_ntoa(remoteAddr.sin_addr));
-	//	send(sClient, sendData, strlen(sendData), 0);
-	//	closesocket(sClient);
-	//}
+		//ä»æ¶ˆæ¯æ± ä¸­å–å‡ºæ¶ˆæ¯å¯¹è±¡  è¯»å–æ”¶åˆ°çš„æ¶ˆæ¯å¹¶æ‰§è¡Œ
+		auto meg_Obj = MessagePool::getInstance()->GetMsg(msgId);
+		meg_Obj->reading(recv_msgBuffer, msgLen - 12 - nameLenth);
+		meg_Obj->callmsg(msgBuffer->sock);
+	}
 
-	//closesocket(slisten);
-	//WSACleanup();
-
-
-	Server server;
-	server.WaitForClient();
 	system("pause");
 	return 0;
 }

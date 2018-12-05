@@ -1,17 +1,33 @@
-#include"MyServer.h"
+ï»¿#include"MyServer.h"
 
 #include<stdio.h>
 #include<string>
 
 #define SERVER_PORT 8888
 #define THREADPOOL_SIZE 10
+vector<ClientSocket> Server::vec_client;
+SOCKET Server::sock_svr;
+pthread_mutex_t Server::m_pthreadMutex;    /** çº¿ç¨‹åŒæ­¥é” */
+pthread_cond_t Server::m_pthreadCond;      /** çº¿ç¨‹åŒæ­¥çš„æ¡ä»¶å˜é‡ */
 
-Server::Server() :threadpool(THREADPOOL_SIZE)
+Server::Server() 
+	: buffer(malloc(SOCKET_READ_BUFFER_SIZE - 4)),
+	c_msg(new char[SOCKET_READ_BUFFER_SIZE])
 {
+	initServer();
+
+	pthread_mutex_init(&m_pthreadMutex, nullptr);
+	pthread_cond_init(&m_pthreadCond, nullptr);
+
+	pthread_listen = (pthread_t*)malloc(sizeof(pthread_t));
+	pthread_create(pthread_listen, NULL, WaitForClient, NULL);
+}
+
+void Server::initServer() {
 	printf("Init Server...\n");
 
 	winsock_ver = MAKEWORD(2, 2);
-	addr_len = sizeof(SOCKADDR_IN);
+	int addr_len = sizeof(SOCKADDR_IN);
 	addr_svr.sin_family = AF_INET;
 	addr_svr.sin_port = htons(SERVER_PORT);
 	addr_svr.sin_addr.S_un.S_addr = ADDR_ANY;
@@ -21,28 +37,29 @@ Server::Server() :threadpool(THREADPOOL_SIZE)
 	ret_val = WSAStartup(winsock_ver, &wsa_data);
 	if (ret_val != 0) {
 		printf("WSA failed to start up : \n");
-		exit(1);
+		//exit(1);
 	}
 	printf("WSA started up...\n");
 
 	sock_svr = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sock_svr == INVALID_SOCKET) {
 		printf("Faild to creat server socket : \n");
-		exit(1);
+		//exit(1);
 	}
 	printf("Server socket bind...\n");
 
 	ret_val = bind(sock_svr, (SOCKADDR*)&addr_svr, addr_len);
+	
 	if (ret_val != 0) {
 		printf("Server socket faild to bind : \n");
-		exit(1);
+		//exit(1);
 	}
 
 	ret_val = listen(sock_svr, SOMAXCONN);
 
 	if (ret_val == SOCKET_ERROR) {
 		printf("Server socket faild to listen : \n");
-		exit(1);
+		//exit(1);
 	}
 	printf("Server socket started to listen...\n");
 	printf("Server Started...\n");
@@ -50,95 +67,78 @@ Server::Server() :threadpool(THREADPOOL_SIZE)
 
 Server::~Server() {
 	closesocket(sock_svr);
-	closesocket(sock_clt);
+	//closesocket(sock_clt);
+	free(pthread_listen);
 	WSACleanup();
 	printf("Socket Closed...\n");
 }
 
-//DWORD WINAPI CreateClinetThread(LPVOID lpParamenter);
+void Server::Send(SOCKET sock, base_reqmessage* msg) {
+	auto msgInfo = msg->writing();
 
-void Server::WaitForClient() {
+	auto size = msgInfo.lenth;
+	buffer = msgInfo.msg;
+
+	const char* msgName = "ResPersonInfo";
+	int32_t name_len = strlen(msgName);
+	int32_t msgId = msg->getId();
+
+	// msgId(int32_t)å­—èŠ‚æ•°  name_len(int32_t)å­—èŠ‚æ•°  name(char[])å­—èŠ‚æ•°
+	int32_t msg_len = 4 + 4 + name_len + size;
+
+	c_msg[0] = (char)(0xff & (msg_len >> 24));
+	c_msg[1] = (char)(0xff & (msg_len >> 16));
+	c_msg[2] = (char)(0xff & (msg_len >> 8));
+	c_msg[3] = (char)(0xff & (msg_len));
+
+	c_msg[4] = (char)(0xff & (msgId >> 24));
+	c_msg[5] = (char)(0xff & (msgId >> 16));
+	c_msg[6] = (char)(0xff & (msgId >> 8));
+	c_msg[7] = (char)(0xff & (msgId));
+
+	c_msg[8] = (char)(0xff & (name_len >> 24));
+	c_msg[9] = (char)(0xff & (name_len >> 16));
+	c_msg[10] = (char)(0xff & (name_len >> 8));
+	c_msg[11] = (char)(0xff & (name_len));
+
+	sprintf(c_msg + 12, msgName);
+	sprintf(c_msg + 12 + name_len, (char*)buffer);
+	int32_t len = 12 + name_len + size;
+
+	int snd_result = send(sock, c_msg, len, 0);
+	if (snd_result == SOCKET_ERROR) {
+		printf("Failed to send message to client : \n");
+		//closesocket(sock);
+	}
+	//delete buffer;
+}
+
+void* Server::WaitForClient(void * threadData) {
+	SOCKADDR_IN addr_clt;
+	int addr_len = sizeof(SOCKADDR_IN);
 	while(true) {
-		sock_clt = accept(sock_svr, (SOCKADDR*)&addr_clt, &addr_len);
+		SOCKET sock_clt = accept(sock_svr, (SOCKADDR*)&addr_clt, &addr_len);
 		if (sock_clt == INVALID_SOCKET) {
 			printf("Faild to accept client : \n");
 			exit(1);
 		}
 
 		printf("Client connected...  IP: %s\n", inet_ntoa(addr_clt.sin_addr));
-		//PlayerInfo info;
-		//info.sock = sock_clt;
-		//info.addr = addr_clt;
 
 		ClientSocket clientSocket;
 		clientSocket.recvClient = new RecvClient();
-		clientSocket.sendClient = new SendClient();
+		//clientSocket.sendClient = new SendClient();
 		clientSocket.recvClient->InitSocket(sock_clt, addr_clt);
-		clientSocket.sendClient->InitSocket(sock_clt, addr_clt);
-		clientSocket.recvClient->SetSendClinet(clientSocket.sendClient);
+		//clientSocket.sendClient->InitSocket(sock_clt, addr_clt);
+		//clientSocket.recvClient->SetSendClinet(clientSocket.sendClient);
+
+		pthread_mutex_lock(&m_pthreadMutex);
 		vec_client.push_back(clientSocket);
+		pthread_mutex_unlock(&m_pthreadMutex);
+		pthread_cond_signal(&m_pthreadCond);
 		
-		threadpool.AddTask(clientSocket.recvClient); // Ïß³Ì³ØÖÐÌí¼Ó½ÓÊÜÏûÏ¢ÈÎÎñ
-		threadpool.AddTask(clientSocket.sendClient); // Ïß³Ì³ØÖÐÌí¼Ó·¢ËÍÏûÏ¢ÈÎÎñ
-
-		char* sendData = new char[255];
-		strcpy(sendData, "[LOGIN IN...]");
-		clientSocket.sendClient->AddSendMsg(sendData);
-		strcpy(sendData, "[test...]");
-		clientSocket.sendClient->AddSendMsg(sendData);
-		strcpy(sendData, "[test...]");
-		clientSocket.sendClient->AddSendMsg(sendData);
-
-		//h_thread = CreateThread(nullptr, 0, CreateClinetThread, (LPVOID)&info, 0, nullptr);
-		//if (h_thread == NULL) {
-		//	printf("Faild to create thread : \n");
-		//	exit(1);
-		//}
-		//CloseHandle(h_thread);
+		CThreadPool::getInstance()->AddTask(clientSocket.recvClient); // çº¿ç¨‹æ± ä¸­æ·»åŠ æŽ¥å—æ¶ˆæ¯ä»»åŠ¡
+		//CThreadPool::getInstance()->AddTask(clientSocket.sendClient); // çº¿ç¨‹æ± ä¸­æ·»åŠ å‘é€æ¶ˆæ¯ä»»åŠ¡
 	}
-}
-
-DWORD WINAPI CreateClinetThread(LPVOID lpParamenter) {
-	PlayerInfo* info = (PlayerInfo*)lpParamenter;
-	SOCKET sock_clt = info->sock;
-	SOCKADDR_IN addr_clt = info->addr;
-	char buf_msg[MSG_BUF_SIZE];
-	int ret_val = 0;
-	int snd_result = 0;
-	do {
-		memset(buf_msg, 0, MSG_BUF_SIZE);
-		ret_val = recv(sock_clt, buf_msg, MSG_BUF_SIZE, 0);
-		if (ret_val > 0) {
-			if (strcmp(buf_msg, "close") == 0) {
-				printf("Client requests to close the Connection...\n");
-				break;
-			}
-			buf_msg[ret_val] = 0x00;
-			printf("Ip: %s Message : %s\n", inet_ntoa(addr_clt.sin_addr), buf_msg);
-			char* sendData = new char[255];
-			sprintf(sendData, "ÊÕµ½ : %s", buf_msg);
-			snd_result = send(sock_clt, sendData, strlen(sendData), 0);
-			if (snd_result == SOCKET_ERROR) {
-				printf("Failed to send message to client : \n");
-				closesocket(sock_clt);
-				return 1;
-			}
-		}
-		else if (ret_val == 0) {
-			printf("connection closed...\n");
-		}
-		else {
-			printf("Faild to receive message from client : \n");
-			closesocket(sock_clt);
-			return 1;
-		}
-	} while (ret_val > 0);
-
-	ret_val = shutdown(sock_clt, SD_SEND);
-	if (ret_val == SOCKET_ERROR) {
-		printf("Failed to shutdown client socket : %s\n");
-		closesocket(sock_clt);
-		return 1;
-	}
-	return 0;
+	return (void*)0;
 }

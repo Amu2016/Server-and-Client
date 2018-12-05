@@ -1,8 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include<WinSock2.h>
 #include"TaskBase.h"
 #include<vector>
 #include"ThreadPool.h"
+#include"stdafx.h"
+#include<net/msgteam.h>
 using namespace std;
 
 #pragma comment(lib,"ws2_32.lib")
@@ -10,9 +12,14 @@ using namespace std;
 #define MSG_BUF_SIZE 1000
 class SendClient;
 
-class RecvClient : public CTask { // ½ÓÊÜÈÎÎñ
+class RecvClient : public CTask { // æ¥å—ä»»åŠ¡
 public:
-	RecvClient(){}
+	RecvClient()
+		:buffer(malloc(SOCKET_READ_BUFFER_SIZE - 4)),
+		c_msg(new char[SOCKET_READ_BUFFER_SIZE]),
+		recv_msgName(new char[100]),
+		recv_msgBuffer(new char[SOCKET_READ_BUFFER_SIZE])
+	{}
 
 	void InitSocket(SOCKET sock, SOCKADDR_IN addr) {
 		sock_clt = sock;
@@ -28,17 +35,26 @@ public:
 
 	virtual int Run();
 private:
-	pthread_mutex_t m_pthreadMutex;    /** Ïß³ÌÍ¬²½Ëø */
-	pthread_cond_t m_pthreadCond;      /** Ïß³ÌÍ¬²½µÄÌõ¼ş±äÁ¿ */
+	pthread_mutex_t m_pthreadMutex;    /** çº¿ç¨‹åŒæ­¥é” */
+	pthread_cond_t m_pthreadCond;      /** çº¿ç¨‹åŒæ­¥çš„æ¡ä»¶å˜é‡ */
 	SOCKET sock_clt;
 	SOCKADDR_IN addr_clt;
 	SendClient* send_clt;
 
 	vector<char*> vec_recvMsg;
 	bool online;
+
+	char* recv_msgName;
+	char* recv_msgBuffer;
+
+	MsgTeam msgteam;
+
+	void *buffer;
+	char* c_len;
+	char* c_msg;
 };
 
-class SendClient : public CTask { //·¢ËÍÈÎÎñ
+class SendClient : public CTask { //å‘é€ä»»åŠ¡
 public:
 	SendClient() {}
 
@@ -51,16 +67,16 @@ public:
 		pthread_cond_init(&m_pthreadCond, nullptr);
 	}
 
-	void AddSendMsg(char* msg);
+	void AddSendMsg(MsgBuffer* msg);
 
 	virtual int Run();
 private:
-	pthread_mutex_t m_pthreadMutex;    /** Ïß³ÌÍ¬²½Ëø */
-	pthread_cond_t m_pthreadCond;      /** Ïß³ÌÍ¬²½µÄÌõ¼ş±äÁ¿ */
+	pthread_mutex_t m_pthreadMutex;    /** çº¿ç¨‹åŒæ­¥é” */
+	pthread_cond_t m_pthreadCond;      /** çº¿ç¨‹åŒæ­¥çš„æ¡ä»¶å˜é‡ */
 
 	SOCKET sock_clt;
 	SOCKADDR_IN addr_clt;
-	vector<char*> vec_sendMsg;
+	vector<MsgBuffer*> vec_sendMsg;
 
 	bool online;
 };
